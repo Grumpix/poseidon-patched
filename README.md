@@ -11,11 +11,12 @@ It contains small patches aimed at improving console readability by suppressing 
 ## Note
 You can re-enable logging of bad packet IDs and protocol errors by adjusting the settings in poseidon.yml:
 
+```yaml
 debug:
   bad-packet-id:
     enabled: false   # Set to true to log bad packet IDs for debugging
   suppress-disconnect-log: true  # Set to false to log protocol disconnect messages
-
+```
 
 Explanation:
 
