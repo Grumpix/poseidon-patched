@@ -1,3 +1,23 @@
+# Poseidon Patched Fork
+
+This repository is a fork of the [Poseidon](https://github.com/...) Minecraft server project.  
+It contains small patches aimed at improving console readability by suppressing unnecessary log messages.
+
+## Changes
+- Suppresses spam from:
+  - `Bad packet id` errors
+  - `Disconnecting: Protocol error` messages
+
+## Purpose
+These patches are intended for server administrators who want a cleaner console output without affecting gameplay or stability.  
+The core functionality of Poseidon remains unchanged.
+
+## Credits
+- Original project: [Poseidon](https://github.com/...)
+- This fork: minor logging patches
+
+
+
 # Project-Poseidon
 ![](/img/banner.png)
 ## What's Project Poseidon?
