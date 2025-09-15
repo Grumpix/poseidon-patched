@@ -5,17 +5,16 @@ on:
     - cron: "0 3 * * *"   # každý den ve 3:00 UTC
   workflow_dispatch:       # možnost spustit ručně
 
-permissions:
-  contents: write   # <--- toto je klíčové
-
 jobs:
   sync:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read   # checkout nepotřebuje write, push jde přes PAT
     steps:
       - name: Checkout fork
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # token se použije automaticky z permissions
+          fetch-depth: 0
 
       - name: Add upstream
         run: |
@@ -27,5 +26,8 @@ jobs:
           git checkout main
           git merge upstream/main --no-edit || true
 
-      - name: Push changes
-        run: git push origin main
+      - name: Push changes using PAT
+        env:
+          PAT_TOKEN: ${{ secrets.PAT_TOKEN }}
+        run: |
+          git push https://x-access-token:$PAT_TOKEN@github.com/Grumpix/poseidon-patched.git main
