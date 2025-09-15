@@ -18,12 +18,6 @@ debug:
   suppress-disconnect-log: true  # Set to false to log protocol disconnect messages
 ```
 
-Explanation:
-
-bad-packet-id.enabled – enables console logging of bad packet IDs. Only turn this on if you need to debug packet issues.
-
-suppress-disconnect-log – controls logging of "Disconnecting: Protocol error" messages. Set to false to see them in the console.
-
 ## Purpose
 These patches are intended for server administrators who want a cleaner console output without affecting gameplay or stability.  
 The core functionality of Poseidon remains unchanged.
