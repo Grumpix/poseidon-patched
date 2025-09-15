@@ -1,4 +1,4 @@
-# Poseidon Patched Fork
+# Poseidon-Patched
 
 This repository is a fork of the [Poseidon](https://github.com/retromcorg/Project-Poseidon) Minecraft server project.  
 It contains small patches aimed at improving console readability by suppressing unnecessary log messages.
