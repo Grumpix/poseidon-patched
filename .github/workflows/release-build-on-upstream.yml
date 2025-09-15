@@ -1,0 +1,84 @@
+name: Build & Release on Upstream Update
+
+on:
+  schedule:
+    - cron: "0 4 * * *"   # každý den ve 4:00 UTC
+  workflow_dispatch:
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      # 1️⃣ Checkout fork
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # 2️⃣ Fetch upstream & get latest tag
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/retromcorg/Project-Poseidon.git || true
+          git fetch upstream --tags
+          LATEST_UPSTREAM_TAG=$(git describe --tags `git rev-list --tags --max-count=1 upstream/main`)
+          echo "LATEST_UPSTREAM_TAG=$LATEST_UPSTREAM_TAG" >> $GITHUB_ENV
+
+      # 3️⃣ Check if we already released this tag
+      - name: Check if release exists
+        id: check_release
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = process.env.LATEST_UPSTREAM_TAG;
+            const releases = await github.rest.repos.listReleases({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const exists = releases.data.some(r => r.tag_name === tag);
+            return exists;
+        result-encoding: string
+
+      # 4️⃣ Stop if release already exists
+      - name: Stop if already released
+        if: steps.check_release.outputs.result == 'true'
+        run: |
+          echo "Release for tag $LATEST_UPSTREAM_TAG already exists. Exiting."
+          exit 0
+
+      # 5️⃣ Merge upstream main
+      - name: Merge upstream main
+        run: |
+          git checkout main
+          git merge upstream/main --no-edit || true
+
+      # 6️⃣ Build JAR (Gradle)
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build JAR
+        run: |
+          ./gradlew clean build
+
+      # 7️⃣ Create GitHub release
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.LATEST_UPSTREAM_TAG }}
+          name: Release ${{ env.LATEST_UPSTREAM_TAG }}
+          body: |
+            Automated release based on upstream tag `${{ env.LATEST_UPSTREAM_TAG }}`.
+            Includes local patches (suppressed Bad packet id / Protocol error logging).
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 8️⃣ Upload JAR to release
+      - name: Upload JAR
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
