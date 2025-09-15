@@ -1,0 +1,7 @@
+name: SuppressDisconnectLogPlugin
+main: org.bukkit.plugin.SuppressDisconnectLogPlugin
+version: 1.0
+api-version: 1.7.3
+commands: {}
+description: Potlačí zprávy o odpojení a kicknutí hráčů v chatu.
+author: David
